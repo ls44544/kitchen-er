@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#faf7f2" media="(prefers-color-scheme:light)">
+<meta name="theme-color" content="#14120f" media="(prefers-color-scheme:dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Kitchen ER">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Kitchen ER — it broke, here's why">
+<meta property="og:description" content="Your sauce split, your rice is mushy, your cake sank. 50 cooking disasters: the rescue, the reason, and whether it's savable at all.">
+<meta property="og:image" content="icon-512.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Kitchen ER — it broke, here's why">
+<meta name="twitter:description" content="50 cooking disasters: the rescue, the reason, and whether it's savable at all. Free, no signup, works offline.">
+<title>Kitchen ER — it broke, here's why</title>
+<meta name="description" content="Fast fixes for cooking disasters. Search your symptom, get the rescue, the reason, and how to avoid it next time.">
+<style>
+:root{
+  --bg:#faf7f2; --card:#fff; --line:#e6ded2; --ink:#1f1b17; --dim:#6f6459;
+  --red:#c0392b; --green:#2f7a4f; --amber:#b8791f; --tint:#f2ece2;
+}
+@media (prefers-color-scheme:dark){
+ :root{--bg:#14120f;--card:#1c1916;--line:#2e2924;--ink:#f0eae2;--dim:#9c9086;--tint:#232019}
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  line-height:1.5;-webkit-font-smoothing:antialiased;
+  overflow-x:hidden;overscroll-behavior-y:none;text-size-adjust:100%;-webkit-text-size-adjust:100%}
+.wrap{max-width:640px;margin:0 auto;
+  padding:0 calc(16px + env(safe-area-inset-right)) calc(60px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left))}
+
+/* header */
+header{padding:18px 52px 12px;text-align:center;position:relative}
+.logo{margin:0;font-size:16px;font-weight:800;letter-spacing:-.2px;line-height:1.25}
+.logo span{color:var(--red)}
+.tag{margin:4px 0 0;font-size:13px;color:var(--dim);line-height:1.4}
+
+/* search */
+.searchbox{position:sticky;top:0;background:var(--bg);padding:12px 0 8px;z-index:10}
+.searchbox::after{content:"";position:absolute;left:-20px;right:-20px;bottom:-14px;height:14px;
+  background:linear-gradient(var(--bg),transparent);pointer-events:none}
+.searchbox::before{content:"";position:absolute;left:-20px;right:-20px;top:-30px;height:30px;background:var(--bg);z-index:-1}
+.sb{position:relative}
+#q{width:100%;font-size:16px;font-family:inherit;padding:15px 44px 15px 42px;min-height:52px;appearance:none;
+  border:1.5px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);outline:none}
+#q:focus{border-color:var(--red)}
+:focus-visible{outline:3px solid var(--red);outline-offset:2px;border-radius:8px}
+.head:focus-visible{outline-offset:-3px}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;
+    scroll-behavior:auto!important}
+}
+.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+  clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.sndbtn{position:absolute;right:0;top:16px;width:40px;height:40px;border-radius:50%;z-index:2;
+  border:1px solid var(--line);background:var(--card);color:var(--dim);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;padding:0}
+.sndbtn svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round}
+.sndbtn.on{color:var(--red);border-color:var(--red)}
+
+.mag{position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:.45;font-size:15px}
+#clr{position:absolute;right:4px;top:50%;transform:translateY(-50%);border:0;background:none;
+  font-size:22px;line-height:1;color:var(--dim);cursor:pointer;display:none;
+  width:44px;height:44px;display:none;align-items:center;justify-content:center;border-radius:50%}
+#clr.show{display:flex}
+
+/* chips */
+.chips{display:flex;gap:7px;overflow-x:auto;padding:2px 16px 4px 0;margin-right:-16px;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;font-size:13px;padding:0 15px;height:38px;line-height:36px;border-radius:20px;
+  border:1px solid var(--line);background:var(--card);color:var(--dim);cursor:pointer;
+  white-space:nowrap;scroll-snap-align:center;font-family:inherit;
+  touch-action:manipulation;transition:background .12s,color .12s}
+.chip:active{transform:scale(.96)}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+.count{font-size:11.5px;color:var(--dim);margin:12px 0 8px;letter-spacing:.3px}
+
+/* cards */
+.card{background:var(--card);border:1px solid var(--line);border-radius:13px;
+  margin-bottom:9px;overflow:hidden}
+.hwrap{margin:0;font-size:inherit;font-weight:inherit}
+.head{width:100%;text-align:left;border:0;background:none;font-family:inherit;color:inherit;
+  padding:15px 16px;cursor:pointer;display:flex;align-items:center;gap:12px;
+  min-height:56px;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.head:active{background:var(--tint)}
+.htxt{margin:0;font-size:16.5px;font-weight:650;flex:1;line-height:1.32;letter-spacing:-.2px}
+.arrow{font-size:12px;color:var(--dim);transition:.2s;flex:0 0 auto}
+.card.open .arrow{transform:rotate(90deg)}
+.card.open .head{padding-bottom:8px}
+
+.body{display:none;padding:0 16px 16px}
+.card.open .body{display:block}
+
+.rescue{background:var(--tint);border-radius:10px;padding:13px 14px;margin-bottom:13px}
+.rlab{font-size:10.5px;font-weight:800;letter-spacing:1.3px;color:var(--red);margin-bottom:8px;
+  display:flex;align-items:center;gap:6px}
+.ico{flex:0 0 auto;width:13px;height:13px;stroke:currentColor;fill:none;
+  stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
+.rescue ol{margin:0;padding-left:19px}
+.rescue li{font-size:14.5px;margin-bottom:6px}
+.rescue li:last-child{margin:0}
+.verdict{display:inline-flex;align-items:center;gap:8px;font-size:16px;font-weight:800;
+  letter-spacing:-.15px;padding:11px 17px;border-radius:24px;margin-top:13px;
+  background:rgba(47,122,79,.15);color:var(--green);box-shadow:inset 0 0 0 1.5px rgba(47,122,79,.3)}
+.verdict.no{background:rgba(192,57,43,.13);color:var(--red);box-shadow:inset 0 0 0 1.5px rgba(192,57,43,.28)}
+.verdict.mid{background:rgba(184,121,31,.16);color:var(--amber);box-shadow:inset 0 0 0 1.5px rgba(184,121,31,.32)}
+
+.sec{margin-bottom:12px}
+.slab{font-size:10.5px;font-weight:800;letter-spacing:1.3px;color:var(--dim);margin-bottom:5px;
+  display:flex;align-items:center;gap:6px}
+.sec p{margin:0;font-size:14.5px;color:var(--ink);opacity:.92}
+.sec.next p{padding-left:11px;border-left:2px solid var(--green)}
+.vico{flex:0 0 auto;width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.8;
+  stroke-linecap:round;stroke-linejoin:round}
+
+.spill{display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  background:var(--tint);border:1px dashed var(--line);border-radius:11px;
+  padding:11px 13px;margin-bottom:11px}
+.spilltxt{flex:1;min-width:180px;font-size:13px;color:var(--dim);line-height:1.45}
+.spilltxt b{color:var(--ink);font-weight:650}
+.spillbtn{flex:0 0 auto;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;
+  min-height:44px;padding:0 16px;border-radius:9px;border:1px solid var(--line);
+  background:var(--card);color:var(--ink);touch-action:manipulation}
+@media (max-width:420px){.spillbtn{flex:1 1 100%}}
+.spillbtn:hover{border-color:var(--red);color:var(--red)}
+.none{text-align:center;padding:40px 20px;color:var(--dim)}
+.none b{display:block;font-size:15px;color:var(--ink);margin-bottom:6px}
+
+footer{text-align:center;font-size:11.5px;color:var(--dim);padding:26px 10px;line-height:1.7}
+mark{background:rgba(192,57,43,.18);color:inherit;border-radius:2px;padding:0 1px}
+@media (max-width:380px){
+  .htxt{font-size:15.5px}
+  .verdict{font-size:15px;padding:10px 15px}
+  .rescue li,.sec p{font-size:14px}
+  .wrap{padding-left:calc(13px + env(safe-area-inset-left));padding-right:calc(13px + env(safe-area-inset-right))}
+}
+@media (hover:none){.spillbtn:hover{border-color:var(--line);color:var(--ink)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1 class="logo">Kitchen <span>ER</span></h1>
+  <p class="tag">It broke. Here's why &mdash; and can you still save it.</p>
+  <button class="sndbtn" id="snd" aria-pressed="false" aria-label="Sound off. Turn quiet sounds on.">
+    <svg viewBox="0 0 24 24" aria-hidden="true" id="sndico"></svg>
+  </button>
+</header>
+
+<div class="searchbox">
+  <div class="sb">
+    <span class="mag">⌕</span>
+    <label for="q" class="sr">Search cooking problems</label>
+    <input id="q" type="search" placeholder="what went wrong? e.g. sauce split, rice mushy"
+      autocomplete="off" autocorrect="off" spellcheck="false"
+      enterkeyhint="search" aria-describedby="count">
+    <button id="clr" type="button" aria-label="Clear search">×</button>
+  </div>
+  <div class="chips" id="chips" role="group" aria-label="Filter by category"></div>
+</div>
+
+<div class="count" id="count" role="status" aria-live="polite"></div>
+<main id="list"></main>
+
+<footer>
+  Fixes you can act on in the next 60 seconds.<br>
+  <span id="tot"></span> symptoms · no account, no ads, works offline
+</footer>
+</div>
+
+<script src="data.js"></script>
+<script>
+const $=i=>document.getElementById(i);
+const F=window.FIXES.map((f,i)=>({...f,id:i}));
+let cat='All', q='';
+
+const cats=['All',...[...new Set(F.map(f=>f.category))]];
+$('chips').innerHTML=cats.map(c=>`<button type="button" class="chip${c==='All'?' on':''}" data-c="${c}" aria-pressed="${c==='All'}">${c}</button>`).join('');
+function setCat(c){
+  cat=c;
+  document.querySelectorAll('.chip').forEach(x=>{
+    const on=x.dataset.c===c; x.classList.toggle('on',on); x.setAttribute('aria-pressed',on);
+  });
+  const on=document.querySelector('.chip.on');
+  if(on&&on.scrollIntoView) on.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'});
+  draw();
+}
+$('chips').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;setCat(b.dataset.c)};
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+$('q').oninput=e=>{q=e.target.value.toLowerCase().trim();$('clr').classList.toggle('show',!!q);draw()};
+$('clr').onclick=()=>{q='';$('q').value='';$('clr').classList.remove('show');draw();$('q').focus();beep('clear')};
+
+function score(f){
+  if(!q) return 1;
+  const s=f.symptom.toLowerCase(), t=f.tags.join(' ').toLowerCase();
+  const words=q.split(/\s+/).filter(Boolean);
+  let sc=0;
+  words.forEach(w=>{
+    if(s.includes(w)) sc+=3;
+    else if(t.includes(w)) sc+=2;
+    else if(f.why.toLowerCase().includes(w)) sc+=1;
+  });
+  return words.length && sc>=words.length ? sc : (sc>0 && words.length===1 ? sc : 0);
+}
+function hl(txt){
+  if(!q) return txt;
+  let o=txt;
+  q.split(/\s+/).filter(w=>w.length>2).forEach(w=>{
+    o=o.replace(new RegExp('('+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','ig'),'<mark>$1</mark>');
+  });
+  return o;
+}
+const ICON={
+  now:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>',
+  why:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.2 9a3 3 0 1 1 3.6 3.4c-.5.2-.8.7-.8 1.2v.6"/><path d="M12 17.6h.01"/></svg>',
+  next:'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>'
+};
+const VICON={
+  '':'<svg class="vico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>',
+  'mid':'<svg class="vico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13c2.5-3 5.5-3 8 0s5.5 3 8 0"/></svg>',
+  'no':'<svg class="vico" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>'
+};
+function vclass(r){
+  const l=r.toLowerCase();
+  if(l.includes('not rescuable')||l.includes('cosmetic')||l.includes('harmless')||l.includes('use a real')) return 'no';
+  if(l.includes('partly')||l.includes('depends')||l.includes('act fast')||l.includes('next batch')||l.includes('repurposable')||l.includes('wait it out')) return 'mid';
+  return '';
+}
+
+function cardHTML(f,open){
+  return `
+    <div class="card${open?' open':''}">
+      <h2 class="hwrap"><button type="button" class="head" aria-expanded="${open}" aria-controls="p${f.id}">
+        <span class="htxt">${hl(f.symptom)}</span><span class="arrow" aria-hidden="true">\u203a</span>
+      </button></h2>
+      <div class="body" id="p${f.id}" role="region">
+        <div class="rescue">
+          <div class="rlab">${ICON.now}RIGHT NOW</div>
+          <ol>${f.rescue.map(x=>`<li>${x}</li>`).join('')}</ol>
+          <span class="verdict ${vclass(f.verdict)}"><span class="sr">Verdict: </span>${VICON[vclass(f.verdict)]}${f.verdict}</span>
+        </div>
+        <div class="sec"><div class="slab">${ICON.why}WHY IT HAPPENED</div><p>${f.why}</p></div>
+        <div class="sec next"><div class="slab">${ICON.next}NEXT TIME</div><p>${f.prevent}</p></div>
+      </div>
+    </div>`;
+}
+
+function draw(){
+  const all = F.map(f=>({f,sc:score(f)})).filter(x=>x.sc>0).sort((a,b)=>b.sc-a.sc);
+  let items = cat==='All' ? all : all.filter(x=>x.f.category===cat);
+
+  // Filter found nothing, but the search DID match elsewhere -> show those instead.
+  let spill = [];
+  if(q && !items.length && all.length){ spill = all; }
+
+  const n = items.length || spill.length;
+  $('count').textContent = q||cat!=='All'
+    ? `${n} match${n===1?'':'es'}` : `${F.length} common kitchen failures`;
+
+  if(!items.length && !spill.length){
+    beep('none');
+    $('list').innerHTML=`<div class="none"><b>Nothing matches "${esc(q)}"</b>Try a simpler word \u2014 "split", "dry", "tough", "burnt", "flat".</div>`;
+    return;
+  }
+
+  if(spill.length){
+    const cats=[...new Set(spill.map(x=>x.f.category))];
+    const where = cats.length===1 ? `in <b>${cats[0]}</b>` : `in other sections`;
+    $('list').innerHTML =
+      `<div class="spill">
+         <div class="spilltxt">No match for \u201c${esc(q)}\u201d under <b>${cat}</b> \u2014 showing ${spill.length} result${spill.length===1?'':'s'} ${where}.</div>
+         <button class="spillbtn" id="jump">Search all sections</button>
+       </div>` +
+      spill.map(({f},i)=>cardHTML(f,i===0)).join('');
+    const j=$('jump');
+    if(j) j.onclick=()=>{ setCat('All'); };
+    return;
+  }
+
+  $('list').innerHTML=items.map(({f},i)=>cardHTML(f, !!q && i===0)).join('');
+}
+$('list').onclick=e=>{
+  const h=e.target.closest('.head'); if(!h) return;
+  const card=h.closest('.card');
+  const opening=!card.classList.contains('open');
+  card.classList.toggle('open');
+  h.setAttribute('aria-expanded', opening);
+  beep(opening?'open':'close');
+  if(opening){
+    // let it expand, then pull the card into view if it ran off the bottom
+    requestAnimationFrame(()=>{
+      const r=card.getBoundingClientRect();
+      const topBar=document.querySelector('.searchbox').getBoundingClientRect().bottom;
+      if(r.bottom>window.innerHeight || r.top<topBar){
+        const y=window.scrollY+r.top-topBar-8;
+        window.scrollTo({top:Math.max(0,y),behavior:'smooth'});
+      }
+    });
+  }
+};
+// dismiss the keyboard once the user starts scrolling results
+let sy=window.scrollY;
+window.addEventListener('scroll',()=>{
+  if(document.activeElement===$('q') && Math.abs(window.scrollY-sy)>60) $('q').blur();
+  sy=window.scrollY;
+},{passive:true});
+/* ---- optional quiet sounds (off by default, remembered) ---- */
+let SND=false, AC=null;
+try{ SND = localStorage.getItem('ker-snd')==='1'; }catch(e){}
+
+const ICO_ON='<path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>';
+const ICO_OFF='<path d="M11 5 6 9H2v6h4l5 4z"/><path d="M22 9l-6 6M16 9l6 6"/>';
+
+function paintSnd(){
+  $('sndico').innerHTML = SND?ICO_ON:ICO_OFF;
+  $('snd').classList.toggle('on',SND);
+  $('snd').setAttribute('aria-pressed',SND);
+  $('snd').setAttribute('aria-label', SND?'Sound on. Turn quiet sounds off.':'Sound off. Turn quiet sounds on.');
+}
+function beep(kind){
+  if(!SND) return;
+  if(window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  try{
+    AC = AC || new (window.AudioContext||window.webkitAudioContext)();
+    if(AC.state==='suspended') AC.resume();
+    const t=AC.currentTime;
+    const o=AC.createOscillator(), g=AC.createGain(), f=AC.createBiquadFilter();
+    f.type='lowpass'; f.frequency.value=1800;
+    o.type='sine';
+    const map={open:[523.25,0.045],close:[392.00,0.035],clear:[659.25,0.04],none:[196.00,0.05]};
+    const [hz,vol]=map[kind]||map.open;
+    o.frequency.setValueAtTime(hz,t);
+    g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(vol,t+0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+0.16);
+    o.connect(f); f.connect(g); g.connect(AC.destination);
+    o.start(t); o.stop(t+0.18);
+  }catch(e){}
+}
+$('snd').onclick=()=>{
+  SND=!SND;
+  try{ localStorage.setItem('ker-snd',SND?'1':'0'); }catch(e){}
+  paintSnd(); if(SND) beep('open');
+};
+paintSnd();
+
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+
+$('tot').textContent=F.length;
+draw();
+</script>
+</body>
+</html>
